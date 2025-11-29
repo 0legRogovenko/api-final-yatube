@@ -18,7 +18,6 @@ class PostSerializer(serializers.ModelSerializer):
 
         model = Post
         fields = '__all__'
-        read_only_fields = ('author',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -34,7 +33,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
         model = Comment
         fields = '__all__'
-        read_only_fields = ('post', 'author')
+        read_only_fields = ('post',)
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -65,23 +64,18 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follow
         fields = '__all__'
 
-    def validate(self, data):
+    def validate_following(self, value):
         """Валидация: запрещает самоподписку и дублирование подписок."""
 
         user = self.context['request'].user
-        following = data['following']
 
-        if user == following:
+        if user == value:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя!',
             )
 
-        if Follow.objects.filter(
-            user=user,
-            following=following,
-        ).exists():
+        if Follow.objects.filter(user=user, following=value).exists():
             raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя!',
+                'Вы уже подписаны на этого пользователя!'
             )
-
-        return data
+        return value

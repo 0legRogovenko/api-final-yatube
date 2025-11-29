@@ -1,16 +1,19 @@
+import os
+
 from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = (
-    'hhz7l-ltdismtf@bzyz+rple7*s*w$jak%'
-    'whj@(@u0eok^f9k4'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'unsafe-default-secret-for-local-development-only',
 )
 
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost')
+ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS.split(',') if h.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,8 +25,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'django_filters',
-    'api',
     'posts',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -80,9 +83,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -91,9 +94,8 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    (BASE_DIR / 'static/',),
-)
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
