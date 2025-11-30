@@ -71,6 +71,13 @@ class FollowSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def to_internal_value(self, data):
+        """Добавляем user в данные до запуска валидаторов."""
+
+        data = super().to_internal_value(data)
+        data['user'] = self.context['request'].user
+        return data
+
     def validate_following(self, author):
         """Запрещает самоподписку."""
         user = self.context['request'].user
