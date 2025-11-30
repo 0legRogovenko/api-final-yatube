@@ -42,7 +42,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
-    def get_post_id(self):
+    def get_post(self):
         """Возвращает ID поста из URL."""
 
         return get_object_or_404(Post, id=self.kwargs['post_id'])
@@ -50,15 +50,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Возвращает queryset комментариев для конкретного поста."""
 
-        post = self.get_post_id()
-        return post.comments.all()
+        return self.get_post().comments.all()
 
     def perform_create(self, serializer):
         """Сохраняет автора и привязывает комментарий к посту."""
 
         serializer.save(
             author=self.request.user,
-            post=self.get_post_id(),
+            post=self.get_post(),
         )
 
 
